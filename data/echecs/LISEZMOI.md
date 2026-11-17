@@ -43,7 +43,7 @@ Un `merge` sur `partie_id` répète les colonnes de `parties` sur chaque coup :
 
 Chess.com ne garde pas mon Elo d'avant la partie, il garde celui d'après. Lichess garde celui d'avant, avec la variation.
 Un modèle qui lit l'Elo d'après sur Chess.com « devine » le résultat : l'Elo monte quand je gagne et baisse quand je perds, il suffit de le comparer à la partie précédente.
-Sur mes parties blitz Chess.com, la variation d'Elo et le résultat ont une corrélation de 0,98, et un modèle qui s'appuie là-dessus atteint une AUC de 0,71 qui triche : il ne prédit rien, il lit la réponse.
+Sur mes parties blitz Chess.com, la variation d'Elo et le résultat ont une corrélation de 0,98, et un modèle entraîné sur toutes mes parties qui s'appuie là-dessus atteint une AUC de 0,71 qui triche : il ne prédit rien, il lit la réponse.
 J'ai donc reconstruit l'Elo d'avant la partie pour Chess.com avant de vous donner les fichiers (détail dans `parties.csv`).
 Les colonnes `elo_joueur` et `elo_adverse` sont maintenant des Elo **avant la partie** sur les deux plateformes, et `elo_joueur_apres` garde la valeur d'après si vous voulez la comparer.
 De même, dans `entrainement_ouvertures.csv`, j'ai converti les évaluations de pions en centipions, pour que le nom des colonnes dise la vérité.
@@ -105,7 +105,7 @@ Ce qu'il faut savoir :
 
 - Les temps sont **par couleur**, pas par joueur : pour mon temps, choisissez la colonne selon `couleur`. Ils manquent pour 49 parties, dont les 3 importées.
 - **Elo avant la partie.** Sur Lichess, `elo_joueur`, `elo_adverse` et `variation_elo` sont ceux que ChessXP a gardés, tels quels (`elo_avant_reconstruit = non`). Sur Chess.com (`elo_avant_reconstruit = oui`), la valeur gardée est celle d'après la partie. Je l'ai remplacée comme ceci : pour chaque plateforme et chaque cadence, je trie les parties par date. Mon Elo d'avant est l'Elo d'après de la partie précédente de la même série, et `variation_elo` est la différence entre les deux.
-- **L'Elo adverse de Chess.com est une approximation.** L'adversaire gagne ce que je perds, donc son Elo d'avant vaut son Elo d'après plus ma variation (somme nulle). Ce n'est pas exact quand une partie est non classée, mais l'écart reste de quelques points.
+- **L'Elo adverse de Chess.com est une approximation.** L'adversaire gagne ce que je perds, donc son Elo d'avant vaut son Elo d'après plus ma variation (somme nulle). Ce n'est pas tout à fait exact, parce que les deux joueurs ne gagnent ou ne perdent pas toujours le même nombre de points, mais l'écart reste de quelques points.
 - **La première partie de chaque série n'a pas d'Elo d'avant.** `elo_joueur`, `elo_adverse` et `variation_elo` sont vides pour la première partie de chaque série Chess.com (4 parties : bullet, blitz, rapid et correspondance). Gardez `elo_joueur_apres` si vous avez besoin d'une valeur pour toutes.
 - **Les parties par correspondance sont moins fiables.** Plusieurs sont jouées en même temps et finissent dans un autre ordre que celui de leur début, donc l'Elo d'avant reconstruit est plus bruité (corrélation de 0,61 entre sa variation et le résultat, contre 0,98 en blitz).
 - `variation_elo` est vide pour 15 parties (les 4 premières de série Chess.com, 8 parties Lichess sans variation, les 3 importées). `elo_joueur_apres` est vide pour 11 parties.
