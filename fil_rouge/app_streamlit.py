@@ -1,23 +1,21 @@
-"""Exo 2 : l'appli Streamlit du fil rouge, sans assistant de code."""
+"""Exo 2 : l'appli Streamlit du fil rouge. Fin à 12h30.
+
+Question : l'appli que ce joueur ouvrirait chaque semaine pour savoir quoi travailler.
+À produire : une barre latérale (cadence, période, couleur), trois st.metric, deux figures
+en colonnes. Le titre de la page dit la question, pas « Dashboard ».
+Lancer : uv run streamlit run fil_rouge/app_streamlit.py --server.address 127.0.0.1
+"""
 
 import plotly.express as px  # noqa: F401
 import streamlit as st
 
-from data import load_data
+from data import load_coups, load_data  # noqa: F401
 
-st.set_page_config(page_title="Carburants Loiret", layout="wide")
+st.set_page_config(page_title="Mes parties d'échecs", layout="wide")
 print("relance")  # regardez le terminal à chaque clic
 
-
-def get_data():  # 6. mettez-la en cache : @st.cache_data(ttl=600)
-    return load_data()
-
-
-df = get_data()
-st.title("Où faire le plein dans le Loiret ?")
-
-# 3. Barre latérale : un selectbox pour le carburant, un multiselect pour les communes (avec key=)
-
-# 4. Trois st.metric : prix médian, le moins cher, nombre de stations
-
-# 5. La carte et l'histogramme, côte à côte (st.columns)
+# TODO 1. Charger les données une seule fois (@st.cache_data)
+# TODO 2. Le titre, puis la barre latérale : widgets avec key=
+# TODO 3. Filtrer, et un message clair si aucune partie ne reste (st.stop)
+# TODO 4. Trois st.metric : parties, score, gaffes par partie
+# TODO 5. Deux figures côte à côte (st.columns)

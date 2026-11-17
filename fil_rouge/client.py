@@ -1,20 +1,21 @@
-"""Exo 5 : une appli Streamlit qui appelle le service FastAPI (lancer api.py d'abord)."""
+"""Exo 5 : une appli Streamlit « et si ? » qui appelle votre API. Fin à 16h15.
+
+Question : et si je jouais plus tard, ou avec les noirs ?
+À produire : un formulaire (couleur, cadence, écart d'Elo, heure), un requests.post vers /predict,
+un st.metric, et un message lisible si l'API refuse la requête (422) ou ne répond pas.
+Lancez api.py d'abord.
+Lancer : uv run streamlit run fil_rouge/client.py --server.address 127.0.0.1
+"""
 
 import os
 
 import requests  # noqa: F401
 import streamlit as st
 
-API = os.environ.get("API_URL", "http://localhost:8000")
+API = os.environ.get("AWP_API_URL", "http://127.0.0.1:8000")
 
-st.title("Estimer le prix d'une station")
+st.title("Et si je jouais plus tard, ou avec les noirs ?")
 
-with st.form("simulation"):
-    carburant = st.selectbox("Carburant", ["GAZOLE", "E10", "SP95", "SP98", "E85", "GPLC"])
-    axe = st.radio("Axe", ["Route", "Autoroute"], horizontal=True)
-    lat = st.number_input("Latitude", 47.5, 48.4, 47.90)
-    lon = st.number_input("Longitude", 1.5, 3.1, 1.90)
-    envoyer = st.form_submit_button("Estimer")
-
-# À vous : si envoyer, un requests.post vers f"{API}/predict", puis st.metric du prix estimé.
-# Affichez l'erreur moyenne du modèle, et un message lisible si l'API répond 422.
+# TODO 1. Un st.form avec les quatre champs et un bouton
+# TODO 2. Au clic : requests.post(f"{API}/predict", json=..., timeout=10)
+# TODO 3. st.metric de la probabilité, st.error si la réponse n'est pas un succès

@@ -1,26 +1,20 @@
-"""Exo 5 : le service FastAPI. Lancer avec : uv run uvicorn api:app --app-dir fil_rouge --reload"""
+"""Exo 5 : le service FastAPI. Fin à 16h15.
 
-from functools import lru_cache
+Question : mes parties et mon modèle, derrière une API que n'importe quel client peut appeler.
+À produire : GET /parties, GET /ouvertures et POST /predict (corps validé par Pydantic).
+Le modèle est chargé une fois, au démarrage. Lancez train.py d'abord.
+Lancer : uv run uvicorn api:app --app-dir fil_rouge --host 127.0.0.1 --port 8000 --reload
+Documentation interactive : http://127.0.0.1:8000/docs
+"""
 
 from fastapi import FastAPI
 
-from data import load_data
+from data import familles, load_data  # noqa: F401
 
-app = FastAPI(title="Carburants Loiret", version="1.0")
+app = FastAPI(title="Mes parties d'échecs", version="1.0")
 
-
-@lru_cache
-def data():
-    return load_data()
-
-
-@app.get("/stations")
-def stations(carburant: str = "E10", limit: int = 20):
-    vue = data()[data()["carburant"] == carburant.upper()].nsmallest(limit, "prix")
-    return vue[["ville", "adresse", "prix"]].to_dict("records")
-
-
-# À vous : POST /predict
-# - une classe Station(BaseModel) : carburant, axe (Literal), lat, lon
-# - le modèle chargé UNE fois, au démarrage : joblib.load(Path(__file__).parent / "model.joblib")
-# - la route renvoie {"prix_estime": ...}
+# TODO 1. Charger le modèle : joblib.load(Path(__file__).parent / "model.joblib")
+# TODO 2. GET /parties : filtres facultatifs cadence et couleur, limit
+# TODO 3. GET /ouvertures : les familles, la pire d'abord (familles de data.py)
+# TODO 4. Une classe Partie(BaseModel) : couleur, cadence, ecart_elo, heure (0 à 23)
+# TODO 5. POST /predict : renvoie {"proba_victoire": ...}

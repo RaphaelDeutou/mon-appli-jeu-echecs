@@ -1,26 +1,31 @@
-"""Exo 4 : la même appli en Dash, avec un drill-down."""
+"""Exo 4 : la même appli en Dash, avec un drill-down. Fin à 15h00.
+
+Question : quelles ouvertures coûtent des points, et dans quelles parties ?
+À produire : un clic sur une barre d'ouverture liste les parties, un clic sur une partie liste
+les coups jugés mauvais, dans deux AG Grid.
+Lancer : uv run python fil_rouge/app_dash.py   (http://127.0.0.1:8050)
+"""
 
 import dash_ag_grid as dag  # noqa: F401
 import plotly.express as px  # noqa: F401
 from dash import Dash, Input, Output, callback, dcc, html  # noqa: F401
 
-from data import load_data
+from data import load_coups, load_data  # noqa: F401
 
-df = load_data()
-
-app = Dash(__name__, title="Carburants Loiret")
-server = app.server
+app = Dash(__name__, title="Mes parties d'échecs")
+server = app.server  # Dash tourne sur Flask
 
 app.layout = html.Div(
     [
-        html.H2("Prix par commune : cliquez une barre"),
-        # 2. un dcc.Dropdown des carburants (id="carburant") et un dcc.Graph (id="communes")
-        # 3. un titre (id="titre-detail") et un dag.AgGrid (id="stations")
+        html.H2("Quelles ouvertures me coûtent des points ? Cliquez une barre"),
+        # TODO 1. un dcc.Graph (id="familles")
+        # TODO 2. un dag.AgGrid (id="parties"), une ligne sélectionnable à la fois
+        # TODO 3. un dag.AgGrid (id="coups")
     ]
 )
 
-# 2. un callback : carburant → les 15 communes les moins chères
-# 3. un callback : clic sur une barre (clickData) → les stations de la commune
+# TODO 4. callback : clickData de "familles" -> les parties de cette famille
+# TODO 5. callback : selectedRows de "parties" -> les coups jugés de cette partie
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=False, port=8050)

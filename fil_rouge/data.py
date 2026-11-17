@@ -1,69 +1,51 @@
-"""Chargement des prix des carburants du Loiret (API data.economie.gouv.fr), avec repli sur un CSV."""
+"""Exo 1 : lire mes parties d'échecs. Fin à 11h00.
+
+Question : je joue depuis 2023, je stagne, qu'est-ce que je devrais travailler ?
+À produire : un DataFrame propre, prêt pour les figures de l'exo 1 et pour l'appli de l'exo 2.
+Les colonnes et leurs pièges sont dans data/echecs/LISEZMOI.md : lisez-le d'abord.
+Lancer : uv run python fil_rouge/data.py
+"""
 
 from pathlib import Path
 
 import pandas as pd
-import requests
 
-API = (
-    "https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/"
-    "prix-des-carburants-en-france-flux-instantane-v2/records"
-)
-DATA = Path(__file__).resolve().parents[1] / "data"
-SNAPSHOT = DATA / "carburants_45.csv"  # versionné dans git, jamais réécrit
-CACHE = DATA / "cache" / "carburants_45.csv"  # copie du dernier appel réussi, hors git
-CARBURANTS = ["gazole", "e10", "sp95", "sp98", "e85", "gplc"]
+DATA = Path(__file__).resolve().parents[1] / "data" / "echecs"
 
 
-def fetch(departement: str = "45") -> pd.DataFrame:
-    """Toutes les stations d'un département, une ligne par station."""
-    rows, offset = [], 0
-    while True:
-        r = requests.get(
-            API,
-            params={"where": f'code_departement="{departement}"', "limit": 100, "offset": offset},
-            timeout=20,
-        )
-        r.raise_for_status()
-        page = r.json()["results"]
-        rows += page
-        offset += 100
-        if len(page) < 100:
-            break
-    df = pd.json_normalize(rows)
-    return df.rename(columns={"geom.lat": "lat", "geom.lon": "lon"})
+def valider(df: pd.DataFrame) -> pd.DataFrame:
+    """Plan B : s'arrêter avec un message clair si le fichier n'a pas la forme attendue.
 
-
-def tidy(df: pd.DataFrame) -> pd.DataFrame:
-    """Format long : une ligne par station et par carburant."""
-    keep = ["id", "ville", "adresse", "pop", "lat", "lon"]
-    prix = [f"{c}_prix" for c in CARBURANTS]
-    long = (
-        df[keep + prix]
-        .melt(
-            id_vars=keep,
-            value_vars=prix,
-            var_name="carburant",
-            value_name="prix",
-        )
-        .dropna(subset=["prix"])
-    )
-    long["carburant"] = long["carburant"].str.removesuffix("_prix").str.upper()
-    long["axe"] = long["pop"].map({"R": "Route", "A": "Autoroute"})
-    return long
+    Colonnes absentes, colonnes entièrement vides, nombres lus comme du texte,
+    identifiant de partie en double, résultat inconnu.
+    """
+    raise NotImplementedError("TODO exo 1")
 
 
 def load_data() -> pd.DataFrame:
-    """L'API si elle répond, sinon la dernière copie, sinon l'instantané du dépôt."""
-    try:
-        df = tidy(fetch())
-        CACHE.parent.mkdir(exist_ok=True)
-        df.to_csv(CACHE, index=False)
-        return df
-    except requests.RequestException:
-        return pd.read_csv(CACHE if CACHE.exists() else SNAPSHOT)
+    """Une ligne par partie (data/echecs/parties.csv), validée.
+
+    Ajoutez : le résultat de mon point de vue en français, un score (1, 0,5 ou 0),
+    l'année, l'heure, et l'écart d'Elo avec l'adversaire. Une cadence vide veut dire
+    « aucune » : ne la laissez pas disparaître des filtres.
+    """
+    raise NotImplementedError("TODO exo 1")
+
+
+def load_coups() -> pd.DataFrame:
+    """Un de mes coups jugés mauvais par ligne (data/echecs/coups_juges.csv)."""
+    raise NotImplementedError("TODO exo 1")
+
+
+def familles(df: pd.DataFrame, min_n: int = 30) -> pd.DataFrame:
+    """Score moyen par famille d'ouvertures, la pire d'abord.
+
+    Colonnes : famille, n (parties), score, gaffes (par partie).
+    Sous min_n parties le chiffre ne dit rien : écartez la famille.
+    """
+    raise NotImplementedError("TODO exo 1")
 
 
 if __name__ == "__main__":
     d = load_data()
-    print(f"{len(d)} lignes, {d['id'].nunique()} stations, {d['carburant'].nunique()} carburants")
+    print(d.shape)
