@@ -1,15 +1,16 @@
-# AWP : applications web de données avec Python
+# Mon application d'analyse de parties d'échecs
 
-CODA Orléans, M2-D, jeudi 19 et vendredi 20 novembre 2026.
+Projet réalisé dans le cadre du cours AWP : applications web de données avec Python,
+à CODA Orléans, M2-D.
 
-Sur cette page, **Use this template** → **Create a new repository**, en public : c'est sur
-votre copie que vous pousserez à l'exo 3. Puis :
+Pour cloner le dépôt et lancer le tableau de bord Streamlit :
 
 ```bash
-git clone https://github.com/<votre-compte>/<votre-copie>
-cd <votre-copie>
+git clone https://github.com/RaphaelDeutou/mon-appli-jeu-echecs.git
+cd mon-appli-jeu-echecs
 uv sync
 uv run pytest -q
+uv run streamlit run fil_rouge/app_streamlit.py --server.address 127.0.0.1
 ```
 
 ## Jeudi, le fil rouge : mes parties d'échecs
@@ -19,8 +20,9 @@ Lisez d'abord `data/echecs/LISEZMOI.md` (une section par fichier, les colonnes e
 `data/echecs/conseils.md` (comment ChessXP juge un coup). La question de la journée : « je joue depuis
 2023, je stagne, qu'est-ce que je devrais travailler ? » Vous n'avez pas besoin de savoir jouer.
 
-Les fichiers de `fil_rouge/` sont des supports d'exercices. Dans cette copie, l'exercice 1
-(`data.py` et `01_figures.py`) est implémenté ; les exercices suivants restent à faire.
+Les fichiers de `fil_rouge/` sont des supports d'exercices. L'exercice 1 (`data.py` et
+`01_figures.py`) et le tableau de bord Streamlit de l'exercice 2 sont implémentés ; les
+autres exercices restent à faire.
 
 | Exo | Durée | Fichier | Lancer |
 |---|---|---|---|
