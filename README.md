@@ -9,7 +9,7 @@ votre copie que vous pousserez à l'exo 3. Puis :
 git clone https://github.com/<votre-compte>/<votre-copie>
 cd <votre-copie>
 uv sync
-uv run pytest -q     # 2 passed, 2 skipped : les données se lisent, le reste est à faire
+uv run pytest -q
 ```
 
 ## Jeudi, le fil rouge : mes parties d'échecs
@@ -19,7 +19,8 @@ Lisez d'abord `data/echecs/LISEZMOI.md` (une section par fichier, les colonnes e
 `data/echecs/conseils.md` (comment ChessXP juge un coup). La question de la journée : « je joue depuis
 2023, je stagne, qu'est-ce que je devrais travailler ? » Vous n'avez pas besoin de savoir jouer.
 
-Les fichiers de `fil_rouge/` sont des squelettes : un énoncé en tête, des `TODO`, pas de solution.
+Les fichiers de `fil_rouge/` sont des supports d'exercices. Dans cette copie, l'exercice 1
+(`data.py` et `01_figures.py`) est implémenté ; les exercices suivants restent à faire.
 
 | Exo | Durée | Fichier | Lancer |
 |---|---|---|---|

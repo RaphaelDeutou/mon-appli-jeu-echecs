@@ -19,7 +19,42 @@ def valider(df: pd.DataFrame) -> pd.DataFrame:
     Colonnes absentes, colonnes entièrement vides, nombres lus comme du texte,
     identifiant de partie en double, résultat inconnu.
     """
-    raise NotImplementedError("TODO exo 1")
+    colonnes_requises = {
+        "partie_id",
+        "date_jeu",
+        "resultat",
+        "cadence",
+        "couleur",
+        "elo_joueur",
+        "elo_adverse",
+        "ouverture_famille",
+        "gaffes_joueur",
+    }
+    manquantes = colonnes_requises - set(df.columns)
+    if manquantes:
+        raise ValueError(f"Colonnes manquantes dans parties.csv : {', '.join(sorted(manquantes))}")
+
+    vides = [colonne for colonne in colonnes_requises if df[colonne].isna().all()]
+    if vides:
+        raise ValueError(f"Colonnes entierement vides dans parties.csv : {', '.join(sorted(vides))}")
+
+    colonnes_numeriques = ("elo_joueur", "elo_adverse", "gaffes_joueur")
+    texte = [colonne for colonne in colonnes_numeriques if not pd.api.types.is_numeric_dtype(df[colonne])]
+    if texte:
+        raise ValueError(f"Colonnes numeriques lues comme du texte : {', '.join(texte)}")
+
+    if df["partie_id"].isna().any() or df["partie_id"].duplicated().any():
+        raise ValueError("La colonne partie_id contient une valeur vide ou un doublon.")
+
+    resultats_connus = {"win", "draw", "lose"}
+    resultats = set(df["resultat"].dropna().unique())
+    inconnus = resultats - resultats_connus
+    if df["resultat"].isna().any() or inconnus:
+        valeurs = ", ".join(sorted(str(valeur) for valeur in inconnus))
+        detail = f" Valeurs inconnues : {valeurs}." if valeurs else ""
+        raise ValueError(f"La colonne resultat contient une valeur vide ou inconnue.{detail}")
+
+    return df
 
 
 def load_data() -> pd.DataFrame:
@@ -32,12 +67,25 @@ def load_data() -> pd.DataFrame:
     resultat (victoire, nulle, défaite), score, annee, heure (UTC), ecart_elo
     (Elo de l'adversaire moins le mien), cadence.
     """
-    raise NotImplementedError("TODO exo 1")
+    df = valider(pd.read_csv(DATA / "parties.csv"))
+    df["date_jeu"] = pd.to_datetime(df["date_jeu"], errors="raise")
+    df["resultat"] = df["resultat"].map({"win": "victoire", "draw": "nulle", "lose": "défaite"})
+    df["score"] = df["resultat"].map({"victoire": 1.0, "nulle": 0.5, "défaite": 0.0})
+    df["annee"] = df["date_jeu"].dt.year
+    df["heure"] = df["date_jeu"].dt.hour
+    df["ecart_elo"] = df["elo_adverse"] - df["elo_joueur"]
+    df["cadence"] = df["cadence"].fillna("aucune")
+    return df
 
 
 def load_coups() -> pd.DataFrame:
     """Un de mes coups jugés mauvais par ligne (data/echecs/coups_juges.csv)."""
-    raise NotImplementedError("TODO exo 1")
+    return pd.read_csv(DATA / "coups_juges.csv")
+
+
+def load_phases() -> pd.DataFrame:
+    """Les statistiques d'une partie par phase (data/echecs/phases.csv)."""
+    return pd.read_csv(DATA / "phases.csv")
 
 
 def familles(df: pd.DataFrame, min_n: int = 30) -> pd.DataFrame:
@@ -46,7 +94,30 @@ def familles(df: pd.DataFrame, min_n: int = 30) -> pd.DataFrame:
     Colonnes : famille, n (parties), score, gaffes (par partie).
     Sous min_n parties le chiffre ne dit rien : écartez la famille.
     """
-    raise NotImplementedError("TODO exo 1")
+    colonnes_requises = {"partie_id", "ouverture_famille", "score", "gaffes_joueur"}
+    manquantes = colonnes_requises - set(df.columns)
+    if manquantes:
+        raise ValueError(f"Colonnes manquantes pour les familles : {', '.join(sorted(manquantes))}")
+    if min_n < 1:
+        raise ValueError("min_n doit etre superieur ou egal a 1.")
+
+    donnees = df.loc[
+        df["ouverture_famille"].notna() & df["ouverture_famille"].astype("string").str.strip().ne("")
+    ]
+    resultat = (
+        donnees.groupby("ouverture_famille", as_index=False)
+        .agg(
+            n=("partie_id", "size"),
+            score=("score", "mean"),
+            gaffes=("gaffes_joueur", "mean"),
+        )
+        .rename(columns={"ouverture_famille": "famille"})
+    )
+    return (
+        resultat.loc[resultat["n"] >= min_n]
+        .sort_values(["score", "famille"], ascending=[True, True])
+        .reset_index(drop=True)
+    )
 
 
 if __name__ == "__main__":
